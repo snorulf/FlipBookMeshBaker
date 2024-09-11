@@ -66,8 +66,8 @@ public class BakeFlipBookMeshEditor : EditorWindow
             return;
         }
 
-        MeshFilter meshFilter = gameObject.GetComponentInChildren<MeshFilter>();
-        if (meshFilter == null)
+        MeshFilter[] meshFilters = gameObject.GetComponentsInChildren<MeshFilter>();
+        if (meshFilters == null)
         {
             Debug.LogError("No MeshFilter found on gameobject", gameObject);
             EditorUtility.DisplayDialog("Error", "No MeshFilter found on " + gameObject.name, "Ok");
@@ -89,7 +89,28 @@ public class BakeFlipBookMeshEditor : EditorWindow
             while (time <= player.Duration)
             {
                 player.UpdateImmediately(time);
-                Mesh meshFrame = (Mesh)Instantiate(meshFilter.sharedMesh);
+
+                List<Mesh> meshes = new List<Mesh>();
+
+                foreach (var meshFilter in meshFilters)
+                {
+                    Mesh mesh = new Mesh();
+                    meshes.Add(meshFilter.sharedMesh);
+                }
+
+                // Combine meshes into one mesh
+                CombineInstance[] combine = new CombineInstance[meshes.Count];
+                for (int i = 0; i < meshes.Count; i++)
+                {
+                    combine[i].mesh = meshes[i];
+                    combine[i].transform = meshFilters[i].transform.localToWorldMatrix;
+                }
+
+                Mesh combinedMesh = new Mesh();
+                combinedMesh.CombineMeshes(combine);
+
+                // Save mesh to asset
+                Mesh meshFrame = (Mesh)Instantiate(combinedMesh);
                 AssetDatabase.CreateAsset(meshFrame, path + meshName + "_" + index + ".asset");
                 bakedMeshes.Add(meshFrame);
                 time += alembicStepSize;
