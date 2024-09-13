@@ -103,7 +103,7 @@ public class BakeFlipBookMeshEditor : EditorWindow
                 for (int i = 0; i < meshes.Count; i++)
                 {
                     combine[i].mesh = meshes[i];
-                    combine[i].transform = meshFilters[i].transform.worldToLocalMatrix * gameObject.transform.localToWorldMatrix;
+                    combine[i].transform = meshFilters[i].transform.localToWorldMatrix;
                 }
 
                 Mesh combinedMesh = new Mesh();
