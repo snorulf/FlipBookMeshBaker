@@ -24,6 +24,18 @@ public class FlipBookMeshArrayManual : MonoBehaviour
         set
         {
             currentTime = Mathf.Clamp(value, 0.0f, duration);
+
+            if (duration == 0)
+            {
+                index = 0;
+                return;
+            }
+
+            if (meshes.Length == 0)
+            {
+                return;
+            }
+
             index = Mathf.RoundToInt((currentTime / duration) * (meshes.Length - 1));
         }
     }
@@ -42,7 +54,7 @@ public class FlipBookMeshArrayManual : MonoBehaviour
 
     private void Update()
     {
-        if (meshes.Length == 0)
+        if (meshes.Length < 2)
         {
             return;
         }
