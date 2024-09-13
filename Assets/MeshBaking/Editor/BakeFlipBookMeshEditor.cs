@@ -1,7 +1,5 @@
-using System;
 using System.IO;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Formats.Alembic.Importer;
@@ -21,15 +19,32 @@ public class BakeFlipBookMeshEditor : EditorWindow
 
     void OnGUI()
     {
+        string path = Path.GetDirectoryName(filepath);
+        string meshName = Path.GetFileName(filepath);
+
         GUILayout.Label("Select a gameobject to bake a Flip Book Mesh from", EditorStyles.boldLabel);
         filepath = EditorGUILayout.TextField("Output", filepath);
+
+#if false
+        if (GUILayout.Button("Clear"))
+        {
+            if (Directory.Exists(path))
+            {
+                Directory.Delete(path, true);
+                Debug.Log("<color=cyan>Deleted bake folder at " + path + "</color>");
+                AssetDatabase.Refresh();
+            }
+            else
+            {
+                Debug.Log("<color=cyan>Bake folder does not exist at " + path + "</color>");
+            }
+        }
+#endif
+
         fps = EditorGUILayout.Slider("FPS", fps, 1f, 120f);
         GUILayout.Label("FPS should be what the source animation was made in", EditorStyles.miniBoldLabel);
         alembicStepSize = EditorGUILayout.Slider("Alembic Step Size", alembicStepSize, 0.01f, 10f);
         GUILayout.Label("The step size in seconds of each mesh frame generated", EditorStyles.miniBoldLabel);
-
-        string path = Path.GetDirectoryName(filepath);
-        string meshName = Path.GetFileName(filepath);
 
         GUILayout.FlexibleSpace();
         if (GUILayout.Button("Bake Skinned Mesh"))
@@ -103,7 +118,7 @@ public class BakeFlipBookMeshEditor : EditorWindow
                 for (int i = 0; i < meshes.Count; i++)
                 {
                     combine[i].mesh = meshes[i];
-                    combine[i].transform = meshFilters[i].transform.localToWorldMatrix;
+                    combine[i].transform = gameObject.transform.localToWorldMatrix.inverse * meshFilters[i].transform.localToWorldMatrix;
                 }
 
                 Mesh combinedMesh = new Mesh();
