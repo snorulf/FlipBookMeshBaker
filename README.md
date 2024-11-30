@@ -1,4 +1,4 @@
-- Tool to bake Alembic data to mesh assets.
+- Bake Alembic data to an array mesh assets. Mesh array is then animated.
 - Creates mesh assets based on source FPS and Alembic step size.
 - Useful when developing for mobile platforms where Alembics dont work.
 - Adds Flip Book Mesh script to generated object so it can be animated like an alembic stream would.
